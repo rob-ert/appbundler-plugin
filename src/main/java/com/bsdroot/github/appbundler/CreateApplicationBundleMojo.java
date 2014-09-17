@@ -118,6 +118,14 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
    * @parameter default-value="????"
    */
   private String bundleSignature;
+  
+  /**
+   * The name of the Bundle. This is the name that is given to the application
+   * bundle; and it is also what will show up in the application menu, dock etc.
+   *
+   * @parameter default-value="${project.name}"
+   */
+  private String docIcon;
 
   /**
    * The path to the working directory. This can be inside or outside the app
@@ -411,6 +419,9 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
     velocityContext.put("iconFile", iconFile == null ? "GenericJavaApp.icns" : iconFile.getName());
     velocityContext.put("version", version);
     velocityContext.put("jvmVersion", jvmVersion);
+    velocityContext.put("docIcon", docIcon);
+    
+    
 
     final StringBuffer jarFilesBuffer = new StringBuffer();
 

@@ -38,6 +38,7 @@
       <string>-Dapple.awt.graphics.EnableQ2DX=true</string>
       <string>-Dapple.awt.graphics.UseQuartz=true</string>
       <string>-Xdock:name=${appName}</string>
+      <string>-Xdock:icon=${docIcon}</string>
     </array>
     <key>JVMArguments</key>
     <array />
