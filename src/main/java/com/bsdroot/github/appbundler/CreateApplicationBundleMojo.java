@@ -16,7 +16,6 @@ package com.bsdroot.github.appbundler;
  * limitations under the License.
  */
 
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -62,705 +61,712 @@ import com.bsdroot.github.appbundler.encoding.DefaultEncodingDetector;
  * @phase package
  * @requiresDependencyResolution runtime
  */
-public class CreateApplicationBundleMojo
-    extends AbstractMojo
-{
+public class CreateApplicationBundleMojo extends AbstractMojo {
 
-    /**
-     * Default includes - everything is included.
-     */
-    private static final String[] DEFAULT_INCLUDES = {"**/**"};
+  /**
+   * Default includes - everything is included.
+   */
+  private static final String[] DEFAULT_INCLUDES = { "**/**" };
 
-    /**
-     * The Maven Project Object
-     *
-     * @parameter default-value="${project}"
-     * @readonly
-     */
-    private MavenProject project;
+  /**
+   * The Maven Project Object
+   *
+   * @parameter default-value="${project}"
+   * @readonly
+   */
+  private MavenProject project;
 
-    /**
-     * The directory where the application bundle will be created
-     *
-     * @parameter default-value="${project.build.directory}/${project.build.finalName}";
-     */
-    private File buildDirectory;
+  /**
+   * The directory where the application bundle will be created
+   *
+   * @parameter 
+   *            default-value="${project.build.directory}/${project.build.finalName}"
+   *            ;
+   */
+  private File buildDirectory;
 
-    /**
-     * The location of the generated disk image file
-     *
-     * @parameter default-value="${project.build.directory}/${project.build.finalName}.dmg"
-     */
-    private File diskImageFile;
+  /**
+   * The location of the generated disk image file
+   *
+   * @parameter 
+   *            default-value="${project.build.directory}/${project.build.finalName}.dmg"
+   */
+  @SuppressWarnings("unused")
+  private File diskImageFile;
 
-    /**
-     * The main class to execute when double-clicking the Application Bundle
-     *
-     * @parameter default-value="JavaAppLauncher";
-     */
-    private String javaLauncherName;
+  /**
+   * The main class to execute when double-clicking the Application Bundle
+   *
+   * @parameter default-value="JavaAppLauncher";
+   */
+  private String javaLauncherName;
 
-    /**
-     * The main class to execute when double-clicking the Application Bundle
-     *
-     * @parameter expression="${mainClass}"
-     * @required
-     */
-    private String mainClass;
+  /**
+   * The main class to execute when double-clicking the Application Bundle
+   *
+   * @parameter expression="${mainClass}"
+   * @required
+   */
+  private String mainClass;
 
-    /**
-     * The name of the Bundle. This is the name that is given to the application bundle;
-     * and it is also what will show up in the application menu, dock etc.
-     *
-     * @parameter default-value="${project.name}"
-     * @required
-     */
-    private String bundleName;
-    
-    
-    /**
-     * The name of the Bundle. This is the name that is given to the application bundle;
-     * and it is also what will show up in the application menu, dock etc.
-     *
-     * @parameter default-value="????"
-     * @required
-     */
-    private String bundleSignature;
+  /**
+   * The name of the Bundle. This is the name that is given to the application
+   * bundle; and it is also what will show up in the application menu, dock etc.
+   *
+   * @parameter default-value="${project.name}"
+   * @required
+   */
+  private String bundleName;
 
-    /**
-     * The path to the working directory.  This can be inside or outside the app bundle.  To
-     * define a working directory <b>inside</b> the app bundle, use e.g. <code>$JAVAROOT</code>.
-     *
-     * @parameter default-value="$APP_PACKAGE"
-     */
-    private String workingDirectory;
+  /**
+   * The name of the Bundle. This is the name that is given to the application
+   * bundle; and it is also what will show up in the application menu, dock etc.
+   *
+   * @parameter default-value="????"
+   * @required
+   */
+  private String bundleSignature;
 
+  /**
+   * The path to the working directory. This can be inside or outside the app
+   * bundle. To define a working directory <b>inside</b> the app bundle, use
+   * e.g. <code>$JAVAROOT</code>.
+   *
+   * @parameter default-value="$APP_PACKAGE"
+   */
+  private String workingDirectory;
 
-    /**
-     * The icon file for the bundle
-     *
-     * @parameter
-     */
-    private File iconFile;
+  /**
+   * The icon file for the bundle
+   *
+   * @parameter
+   */
+  private File iconFile;
 
-    /**
-     * The version of the project. Will be used as the value of the CFBundleVersion key.
-     *
-     * @parameter default-value="${project.version}"
-     */
-    private String version;
+  /**
+   * The version of the project. Will be used as the value of the
+   * CFBundleVersion key.
+   *
+   * @parameter default-value="${project.version}"
+   */
+  private String version;
 
-    /**
-     * A value for the JVMVersion key.
-     *
-     * @parameter default-value="1.4+"
-     */
-    private String jvmVersion;
+  /**
+   * A value for the JVMVersion key.
+   *
+   * @parameter default-value="1.4+"
+   */
+  private String jvmVersion;
 
-    /**
-     * The location of the produced Zip file containing the bundle.
-     *
-     * @parameter default-value="${project.build.directory}/${project.build.finalName}-app.zip"
-     */
-    private File zipFile;
+  /**
+   * The location of the produced Zip file containing the bundle.
+   *
+   * @parameter default-value=
+   *            "${project.build.directory}/${project.build.finalName}-app.zip"
+   */
+  @SuppressWarnings("unused")
+  private File zipFile;
 
-    /**
-     * Paths to be put on the classpath in addition to the projects dependencies.
-     * Might be useful to specifiy locations of dependencies in the provided scope that are not distributed with
-     * the bundle but have a known location on the system.
-     * {@see http://jira.codehaus.org/browse/MOJO-874}
-     *
-     * @parameter
-     */
-    private List additionalClasspath;
+  /**
+   * Paths to be put on the classpath in addition to the projects dependencies.
+   * Might be useful to specifiy locations of dependencies in the provided scope
+   * that are not distributed with the bundle but have a known location on the
+   * system. {@see http://jira.codehaus.org/browse/MOJO-874}
+   *
+   * @parameter
+   */
+  private List<String> additionalClasspath;
 
-    /**
-     * Additional resources (as a list of FileSet objects) that will be copies into
-     * the build directory and included in the .dmg and zip files alongside with the
-     * application bundle.
-     *
-     * @parameter
-     */
-    private List additionalResources;
+  /**
+   * Additional resources (as a list of FileSet objects) that will be copies
+   * into the build directory and included in the .dmg and zip files alongside
+   * with the application bundle.
+   *
+   * @parameter
+   */
+  private List<FileSet> additionalResources;
 
-    /**
-     * Additional files to bundle inside the Resources/Java directory and include on
-     * the classpath.  These could include additional JARs or JNI libraries.
-     *
-     * @parameter
-     */
-    private List additionalBundledClasspathResources;
+  /**
+   * Additional files to bundle inside the Resources/Java directory and include
+   * on the classpath. These could include additional JARs or JNI libraries.
+   *
+   * @parameter
+   */
+  private List<FileSet> additionalBundledClasspathResources;
 
-    /**
-     * Velocity Component.
-     *
-     * @component
-     * @readonly
-     */
-    private VelocityComponent velocity;
+  /**
+   * Velocity Component.
+   *
+   * @component
+   * @readonly
+   */
+  private VelocityComponent velocity;
 
-    /**
-     * The location of the template for Info.plist.
-     * Classpath is checked before the file system.
-     *
-     * @parameter default-value="com/bsdroot/github/appbundler/Info.plist.template"
-     */
-    private String dictionaryFile;
+  /**
+   * The location of the template for Info.plist. Classpath is checked before
+   * the file system.
+   *
+   * @parameter 
+   *            default-value="com/bsdroot/github/appbundler/Info.plist.template"
+   */
+  private String dictionaryFile;
 
-    /**
-     * Options to the JVM, will be used as the value of VMOptions in Info.plist.
-     *
-     * @parameter
-     */
-    private String vmOptions;
+  /**
+   * Options to the JVM, will be used as the value of VMOptions in Info.plist.
+   *
+   * @parameter
+   */
+  private String vmOptions;
 
+  /**
+   * The Zip archiver.
+   *
+   * @component
+   * @readonly
+   */
+  @SuppressWarnings("unused")
+  private MavenProjectHelper projectHelper;
 
-    /**
-     * The Zip archiver.
-     *
-     * @component
-     * @readonly
-     */
-    private MavenProjectHelper projectHelper;
+  /**
+   * The Zip archiver.
+   *
+   * @parameter 
+   *            expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
+   * @required
+   * @readonly
+   */
+  @SuppressWarnings("unused")
+  private ZipArchiver zipArchiver;
 
-    /**
-     * The Zip archiver.
-     *
-     * @parameter expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
-     * @required
-     * @readonly
-     */
-    private ZipArchiver zipArchiver;
+  /**
+   * If this is set to <code>true</code>, the generated DMG file will be
+   * internet-enabled. The default is ${false}
+   *
+   * @parameter default-value="false"
+   */
+  @SuppressWarnings("unused")
+  private boolean internetEnable;
 
-    /**
-     * If this is set to <code>true</code>, the generated DMG file will be internet-enabled.
-     * The default is ${false}
-     *
-     * @parameter default-value="false"
-     */
-    private boolean internetEnable;
+  /**
+   * The path to the SetFile tool.
+   */
+  @SuppressWarnings("unused")
+  private static final String SET_FILE_PATH = "/Applications/Xcode.app/Contents/Developer/Tools/SetFile";
 
-    /**
-     * The path to the SetFile tool.
-     */
-    private static final String SET_FILE_PATH = "/Applications/Xcode.app/Contents/Developer/Tools/SetFile";
+  /**
+   * Bundle project as a Mac OS X application bundle.
+   *
+   * @throws MojoExecutionException
+   *           If an unexpected error occurs during packaging of the bundle.
+   */
+  public void execute() throws MojoExecutionException {
 
+    // Set up and create directories
+    buildDirectory.mkdirs();
 
-    /**
-     * Bundle project as a Mac OS X application bundle.
-     *
-     * @throws MojoExecutionException If an unexpected error occurs during packaging of the bundle.
-     */
-    public void execute()
-        throws MojoExecutionException
-    {
+    File bundleDir = new File(buildDirectory, bundleName + ".app");
+    bundleDir.mkdirs();
 
-        // Set up and create directories
-        buildDirectory.mkdirs();
+    File contentsDir = new File(bundleDir, "Contents");
+    contentsDir.mkdirs();
 
-        File bundleDir = new File( buildDirectory, bundleName + ".app" );
-        bundleDir.mkdirs();
+    File resourcesDir = new File(contentsDir, "Resources");
+    resourcesDir.mkdirs();
 
-        File contentsDir = new File( bundleDir, "Contents" );
-        contentsDir.mkdirs();
+    File javaDirectory = new File(contentsDir, "Java");
+    javaDirectory.mkdirs();
 
-        File resourcesDir = new File( contentsDir, "Resources" );
-        resourcesDir.mkdirs();
+    File macOSDirectory = new File(contentsDir, "MacOS");
+    macOSDirectory.mkdirs();
 
-        File javaDirectory = new File( contentsDir, "Java" );
-        javaDirectory.mkdirs();
+    // Copy in the native java application stub
+    File launcher = new File(macOSDirectory, javaLauncherName);
+    launcher.setExecutable(true);
 
-        File macOSDirectory = new File( contentsDir, "MacOS" );
-        macOSDirectory.mkdirs();
+    FileOutputStream launcherStream = null;
 
-        // Copy in the native java application stub
-        File launcher = new File(macOSDirectory, javaLauncherName);
-        launcher.setExecutable(true);
+    try {
+      launcherStream = new FileOutputStream(launcher);
+    }
+    catch (FileNotFoundException e) {
+      throw new MojoExecutionException("Could not copy file to directory " + launcher, e);
+    }
 
-        FileOutputStream launcherStream = null;
+    InputStream launcherResourceStream = this.getClass().getResourceAsStream(javaLauncherName);
+    try {
+      copyStream(launcherResourceStream, launcherStream);
+
+    }
+    catch (IOException e) {
+      throw new MojoExecutionException("Could not copy file " + javaLauncherName + " to directory " + macOSDirectory, e);
+    }
+
+    // Copy icon file to the bundle if specified
+    if (iconFile != null) {
+      try {
+        FileUtils.copyFileToDirectory(iconFile, resourcesDir);
+      }
+      catch (IOException e) {
+        throw new MojoExecutionException("Error copying file " + iconFile + " to " + resourcesDir, e);
+      }
+    }
+
+    // Resolve and copy in all dependecies from the pom
+    List<String> files = copyDependencies(javaDirectory);
+
+    System.out.println("Checking for additionalBundledClasspathResources: " + additionalBundledClasspathResources);
+    if (additionalBundledClasspathResources != null && !additionalBundledClasspathResources.isEmpty()) {
+      files.addAll(copyAdditionalBundledClasspathResources(javaDirectory, "lib", additionalBundledClasspathResources));
+    }
+
+    // Create and write the Info.plist file
+    File infoPlist = new File(bundleDir, "Contents/Info.plist");
+    writeInfoPlist(infoPlist, files);
+
+    // Copy specified additional resources into the top level directory
+    if (additionalResources != null && !additionalResources.isEmpty()) {
+      copyResources(buildDirectory, additionalResources);
+    }
+
+    // if ( isOSX() )
+    // {
+    // // Make the stub executable
+    // Commandline chmod = new Commandline();
+    // try
+    // {
+    // chmod.setExecutable( "chmod" );
+    // chmod.createArgument().setValue( "755" );
+    // chmod.createArgument().setValue( launcher.getAbsolutePath() );
+    //
+    // chmod.execute();
+    // }
+    // catch ( CommandLineException e )
+    // {
+    // throw new MojoExecutionException( "Error executing " + chmod + " ", e );
+    // }
+    //
+    // // This makes sure that the .app dir is actually registered as an
+    // application bundle
+    // if ( new File( SET_FILE_PATH ).exists() )
+    // {
+    // Commandline setFile = new Commandline();
+    // try
+    // {
+    // setFile.setExecutable(SET_FILE_PATH);
+    // setFile.createArgument().setValue( "-a" );
+    // setFile.createArgument().setValue( "B" );
+    // setFile.createArgument().setValue( bundleDir.getAbsolutePath() );
+    //
+    // setFile.execute();
+    // }
+    // catch ( CommandLineException e )
+    // {
+    // throw new MojoExecutionException( "Error executing " + setFile, e );
+    // }
+    // }
+    // else
+    // {
+    // getLog().warn( "Could  not set 'Has Bundle' attribute. " +SET_FILE_PATH
+    // +" not found, is Developer Tools installed?" );
+    // }
+    // // Create a .dmg file of the app
+    // Commandline dmg = new Commandline();
+    // try
+    // {
+    // dmg.setExecutable( "hdiutil" );
+    // dmg.createArgument().setValue( "create" );
+    // dmg.createArgument().setValue( "-srcfolder" );
+    // dmg.createArgument().setValue( buildDirectory.getAbsolutePath() );
+    // dmg.createArgument().setValue( diskImageFile.getAbsolutePath() );
+    // try
+    // {
+    // dmg.execute().waitFor();
+    // }
+    // catch ( InterruptedException e )
+    // {
+    // throw new MojoExecutionException(
+    // "Thread was interrupted while creating DMG " + diskImageFile, e );
+    // }
+    // }
+    // catch ( CommandLineException e )
+    // {
+    // throw new MojoExecutionException( "Error creating disk image " +
+    // diskImageFile, e );
+    // }
+    // if(internetEnable) {
+    // try {
+    //
+    // Commandline internetEnable = new Commandline();
+    //
+    // internetEnable.setExecutable("hdiutil");
+    // internetEnable.createArgument().setValue("internet-enable" );
+    // internetEnable.createArgument().setValue("-yes");
+    // internetEnable.createArgument().setValue(diskImageFile.getAbsolutePath());
+    //
+    // internetEnable.execute();
+    // } catch (CommandLineException e) {
+    // throw new MojoExecutionException("Error internet enabling disk image: " +
+    // diskImageFile, e);
+    // }
+    // }
+    // projectHelper.attachArtifact(project, "dmg", null, diskImageFile);
+    // }
+
+    // zipArchiver.setDestFile( zipFile );
+    // try
+    // {
+    // String[] stubPattern = {buildDirectory.getName() + "/" +
+    // bundleDir.getName() +"/Contents/MacOS/" + javaLauncherName};
+    //
+    // zipArchiver.addDirectory( buildDirectory.getParentFile(), new
+    // String[]{buildDirectory.getName() + "/**"},
+    // stubPattern);
+    //
+    // DirectoryScanner scanner = new DirectoryScanner();
+    // scanner.setBasedir( buildDirectory.getParentFile() );
+    // scanner.setIncludes( stubPattern);
+    // scanner.scan();
+    //
+    // String[] stubs = scanner.getIncludedFiles();
+    // for ( int i = 0; i < stubs.length; i++ )
+    // {
+    // String s = stubs[i];
+    // zipArchiver.addFile( new File( buildDirectory.getParentFile(), s ), s,
+    // 0755 );
+    // }
+    //
+    // zipArchiver.createArchive();
+    // projectHelper.attachArtifact(project, "zip", null, zipFile);
+    // }
+    // catch ( ArchiverException e )
+    // {
+    // throw new MojoExecutionException(
+    // "Could not create zip archive of application bundle in " + zipFile, e );
+    // }
+    // catch ( IOException e )
+    // {
+    // throw new MojoExecutionException(
+    // "IOException creating zip archive of application bundle in " + zipFile,
+    // e );
+    // }
+  }
+
+  /**
+   * The bundle name is used in paths, so we need to clean it for unwanted
+   * characters, like ":" on Windows.
+   * 
+   * @param bundleName
+   *          the "unclean" bundle name.
+   * @return a clean bundle name
+   */
+  private String cleanBundleName(String bundleName) {
+    return bundleName.replace(':', '-');
+  }
+
+  // private boolean isOSX()
+  // {
+  // String osName = System.getProperty( "os.name" );
+  // return osName.equalsIgnoreCase("Mac OS X");
+  // }
+
+  /**
+   * Copy all dependencies into the $JAVAROOT directory
+   *
+   * @param javaDirectory
+   *          where to put jar files
+   * @return A list of file names added
+   * @throws MojoExecutionException
+   */
+  private List<String> copyDependencies(File javaDirectory) throws MojoExecutionException {
+
+    ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
+
+    List<String> list = new ArrayList<String>();
+
+    // File repoDirectory = new File(javaDirectory, "repo");
+    // repoDirectory.mkdirs();
+
+    // First, copy the project's own artifact
+    File artifactFile = project.getArtifact().getFile();
+    list.add(layout.pathOf(project.getArtifact()));
+
+    try {
+      FileUtils.copyFile(artifactFile, new File(javaDirectory, layout.pathOf(project.getArtifact())));
+    }
+    catch (IOException e) {
+      throw new MojoExecutionException("Could not copy artifact file " + artifactFile + " to " + javaDirectory);
+    }
+
+    Set<Artifact> artifacts = project.getArtifacts();
+
+    Iterator<Artifact> i = artifacts.iterator();
+
+    while (i.hasNext()) {
+      Artifact artifact = i.next();
+
+      File file = artifact.getFile();
+      File dest = new File(javaDirectory, layout.pathOf(artifact));
+
+      getLog().debug("Adding " + file);
+
+      try {
+        FileUtils.copyFile(file, dest);
+      }
+      catch (IOException e) {
+        throw new MojoExecutionException("Error copying file " + file + " into " + javaDirectory, e);
+      }
+
+      list.add(layout.pathOf(artifact));
+    }
+
+    return list;
+  }
+
+  /**
+   * Copy additional dependencies into the $JAVAROOT directory.
+   * 
+   * @param javaDirectory
+   * @param targetDirectoryName
+   *          The directory within $JAVAROOT that these resources will be copied
+   *          to
+   * @param additionalBundledClasspathResources
+   * @return A list of file names added
+   * @throws MojoExecutionException
+   */
+  private List<String> copyAdditionalBundledClasspathResources(File javaDirectory, String targetDirectoryName,
+      List<FileSet> additionalBundledClasspathResources) throws MojoExecutionException {
+    // Create the destination directory
+    File destinationDirectory = new File(javaDirectory, targetDirectoryName);
+    destinationDirectory.mkdirs();
+
+    List<String> addedFilenames = copyResources(destinationDirectory, additionalBundledClasspathResources);
+
+    return addPath(addedFilenames, targetDirectoryName);
+  }
+
+  /**
+   * Modifies a String list of filenames to include an additional path.
+   * 
+   * @param filenames
+   * @param additionalPath
+   * @return
+   */
+  private List<String> addPath(List<String> filenames, String additionalPath) {
+    ArrayList<String> newFilenames = new ArrayList<>(filenames.size());
+    for (int i = 0; i < filenames.size(); i++) {
+      newFilenames.add(additionalPath + '/' + filenames.get(i));
+    }
+    return newFilenames;
+  }
+
+  /**
+   * Writes an Info.plist file describing this bundle.
+   *
+   * @param infoPlist
+   *          The file to write Info.plist contents to
+   * @param files
+   *          A list of file names of the jar files to add in $JAVAROOT
+   * @throws MojoExecutionException
+   */
+  private void writeInfoPlist(File infoPlist, List<String> files) throws MojoExecutionException {
+    Velocity.setProperty("file.resource.loader.path", "target/classes");
+
+    try {
+      Velocity.init();
+    }
+    catch (Exception e) {
+      throw new MojoExecutionException("Exception occured in initializing velocity", e);
+    }
+
+    VelocityContext velocityContext = new VelocityContext();
+
+    velocityContext.put("mainClass", mainClass);
+    velocityContext.put("cfBundleExecutable", javaLauncherName);
+    velocityContext.put("vmOptions", vmOptions);
+    velocityContext.put("bundleName", cleanBundleName(bundleName));
+    velocityContext.put("bundleSignature", bundleSignature);
+
+    velocityContext.put("workingDirectory", workingDirectory);
+
+    velocityContext.put("iconFile", iconFile == null ? "GenericJavaApp.icns" : iconFile.getName());
+
+    velocityContext.put("version", version);
+
+    velocityContext.put("jvmVersion", jvmVersion);
+
+    StringBuffer jarFilesBuffer = new StringBuffer();
+
+    jarFilesBuffer.append("<array>");
+    for (int i = 0; i < files.size(); i++) {
+      String name = (String) files.get(i);
+      jarFilesBuffer.append("<string>");
+      jarFilesBuffer.append(name);
+      jarFilesBuffer.append("</string>");
+
+    }
+    if (additionalClasspath != null) {
+      for (int i = 0; i < additionalClasspath.size(); i++) {
+        String pathElement = (String) additionalClasspath.get(i);
+        jarFilesBuffer.append("<string>");
+        jarFilesBuffer.append(pathElement);
+        jarFilesBuffer.append("</string>");
+
+      }
+    }
+    jarFilesBuffer.append("</array>");
+
+    velocityContext.put("classpath", jarFilesBuffer.toString());
+
+    try {
+      File f = new File("target/classes", dictionaryFile);
+      URI rsrc = null;
+
+      if (f.exists() && f.isFile()) {
+        rsrc = f.toURI();
+
+        String encoding = detectEncoding(rsrc);
+
+        getLog().debug("Detected encoding " + encoding + " for dictionary file " + dictionaryFile);
+
+        Writer writer = new OutputStreamWriter(new FileOutputStream(infoPlist), encoding);
+
+        Template template = Velocity.getTemplate(dictionaryFile, encoding);
+
+        template.merge(velocityContext, writer);
+
+        writer.close();
+      }
+      else {
+        Writer writer = new OutputStreamWriter(new FileOutputStream(infoPlist), "UTF-8");
+
+        velocity.getEngine().mergeTemplate(dictionaryFile, "UTF-8", velocityContext, writer);
+
+        writer.close();
+      }
+    }
+    catch (IOException e) {
+      throw new MojoExecutionException("Could not write Info.plist to file " + infoPlist, e);
+    }
+    catch (ParseErrorException e) {
+      throw new MojoExecutionException("Error parsing " + dictionaryFile, e);
+    }
+    catch (ResourceNotFoundException e) {
+      throw new MojoExecutionException("Could not find resource for template " + dictionaryFile, e);
+    }
+    catch (MethodInvocationException e) {
+      throw new MojoExecutionException("MethodInvocationException occured merging Info.plist template "
+          + dictionaryFile, e);
+    }
+    catch (Exception e) {
+      throw new MojoExecutionException("Exception occured merging Info.plist template " + dictionaryFile, e);
+    }
+
+  }
+
+  private static String detectEncoding(URI uri) throws Exception {
+    byte[] data = Files.readAllBytes(Paths.get(uri));
+    return new DefaultEncodingDetector().detectXmlEncoding(new ByteArrayInputStream(data));
+  }
+
+  /**
+   * Scan a fileset and get a list of files which it contains.
+   * 
+   * @param fileset
+   * @return list of files contained within a fileset.
+   * @throws FileNotFoundException
+   */
+  private List<String> scanFileSet(File sourceDirectory, FileSet fileSet) {
+    final String[] emptyStrArray = {};
+
+    DirectoryScanner scanner = new DirectoryScanner();
+
+    scanner.setBasedir(sourceDirectory);
+    if (fileSet.getIncludes() != null && !fileSet.getIncludes().isEmpty()) {
+      scanner.setIncludes(fileSet.getIncludes().toArray(emptyStrArray));
+    }
+    else {
+      scanner.setIncludes(DEFAULT_INCLUDES);
+    }
+
+    if (fileSet.getExcludes() != null && !fileSet.getExcludes().isEmpty()) {
+      scanner.setExcludes(fileSet.getExcludes().toArray(emptyStrArray));
+    }
+
+    if (fileSet.isUseDefaultExcludes()) {
+      scanner.addDefaultExcludes();
+    }
+
+    scanner.scan();
+
+    List<String> includedFiles = Arrays.asList(scanner.getIncludedFiles());
+
+    return includedFiles;
+  }
+
+  /**
+   * Copies given resources to the build directory.
+   *
+   * @param fileSets
+   *          A list of FileSet objects that represent additional resources to
+   *          copy.
+   * @throws MojoExecutionException
+   *           In case af a resource copying error.
+   */
+  private List<String> copyResources(File targetDirectory, List<FileSet> fileSets) throws MojoExecutionException {
+    ArrayList<String> addedFiles = new ArrayList<>();
+    for (Iterator<FileSet> it = fileSets.iterator(); it.hasNext();) {
+      FileSet fileSet = (FileSet) it.next();
+
+      // Get the absolute base directory for the FileSet
+      File sourceDirectory = new File(fileSet.getDirectory());
+      if (!sourceDirectory.isAbsolute()) {
+        sourceDirectory = new File(project.getBasedir(), sourceDirectory.getPath());
+      }
+      if (!sourceDirectory.exists()) {
+        // If the requested directory does not exist, log it and carry on
+        // TODO re-instate the logging that was here previously
+        continue;
+      }
+
+      List<String> includedFiles = scanFileSet(sourceDirectory, fileSet);
+      addedFiles.addAll(includedFiles);
+
+      getLog().info("Copying " + includedFiles.size() + " additional resource" + (includedFiles.size() > 1 ? "s" : ""));
+
+      for (Iterator<String> j = includedFiles.iterator(); j.hasNext();) {
+        String destination = (String) j.next();
+        File source = new File(sourceDirectory, destination);
+        File destinationFile = new File(targetDirectory, destination);
+
+        // Make sure that the directory we are copying into exists
+        destinationFile.getParentFile().mkdirs();
 
         try {
-            launcherStream = new FileOutputStream(launcher);
-        } catch (FileNotFoundException e) {
-            throw new MojoExecutionException(
-                "Could not copy file to directory " + launcher, e );
+          FileUtils.copyFile(source, destinationFile);
         }
-
-        InputStream launcherResourceStream = this.getClass().getResourceAsStream(javaLauncherName);
-        try {
-            copyStream(launcherResourceStream, launcherStream);
-
-        } catch (IOException e) {
-            throw new MojoExecutionException("Could not copy file " + javaLauncherName + " to directory " + macOSDirectory, e);
+        catch (IOException e) {
+          throw new MojoExecutionException("Error copying additional resource " + source, e);
         }
-
-        // Copy icon file to the bundle if specified
-        if ( iconFile != null )
-        {
-            try
-            {
-                FileUtils.copyFileToDirectory( iconFile, resourcesDir );
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException( "Error copying file " + iconFile + " to " + resourcesDir, e );
-            }
-        }
-
-        // Resolve and copy in all dependecies from the pom
-        List files = copyDependencies( javaDirectory );
-
-        System.out.println("Checking for additionalBundledClasspathResources: " + additionalBundledClasspathResources);
-        if(additionalBundledClasspathResources != null && !additionalBundledClasspathResources.isEmpty()) {
-        	files.addAll(copyAdditionalBundledClasspathResources(javaDirectory, "lib", additionalBundledClasspathResources));
-        }
-
-        // Create and write the Info.plist file
-        File infoPlist = new File( bundleDir, "Contents/Info.plist" );
-        writeInfoPlist( infoPlist, files );
-
-        // Copy specified additional resources into the top level directory
-        if (additionalResources != null && !additionalResources.isEmpty())
-        {
-            copyResources(buildDirectory, additionalResources);
-        }
-
-//        if ( isOSX() )
-//        {
-//            // Make the stub executable
-//            Commandline chmod = new Commandline();
-//            try
-//            {
-//                chmod.setExecutable( "chmod" );
-//                chmod.createArgument().setValue( "755" );
-//                chmod.createArgument().setValue( launcher.getAbsolutePath() );
-//
-//                chmod.execute();
-//            }
-//            catch ( CommandLineException e )
-//            {
-//                throw new MojoExecutionException( "Error executing " + chmod + " ", e );
-//            }
-//
-//            // This makes sure that the .app dir is actually registered as an application bundle
-//            if ( new File( SET_FILE_PATH ).exists() )
-//            {
-//                Commandline setFile = new Commandline();
-//                try
-//                {
-//                    setFile.setExecutable(SET_FILE_PATH);
-//                    setFile.createArgument().setValue( "-a" );
-//                    setFile.createArgument().setValue( "B" );
-//                    setFile.createArgument().setValue( bundleDir.getAbsolutePath() );
-//
-//                    setFile.execute();
-//                }
-//                catch ( CommandLineException e )
-//                {
-//                    throw new MojoExecutionException( "Error executing " + setFile, e );
-//                }
-//            }
-//            else
-//            {
-//                getLog().warn( "Could  not set 'Has Bundle' attribute. " +SET_FILE_PATH +" not found, is Developer Tools installed?" );
-//            }
-//            // Create a .dmg file of the app
-//            Commandline dmg = new Commandline();
-//            try
-//            {
-//                dmg.setExecutable( "hdiutil" );
-//                dmg.createArgument().setValue( "create" );
-//                dmg.createArgument().setValue( "-srcfolder" );
-//                dmg.createArgument().setValue( buildDirectory.getAbsolutePath() );
-//                dmg.createArgument().setValue( diskImageFile.getAbsolutePath() );
-//                try
-//                {
-//                    dmg.execute().waitFor();
-//                }
-//                catch ( InterruptedException e )
-//                {
-//                    throw new MojoExecutionException( "Thread was interrupted while creating DMG " + diskImageFile, e );
-//                }
-//            }
-//            catch ( CommandLineException e )
-//            {
-//                throw new MojoExecutionException( "Error creating disk image " + diskImageFile, e );
-//            }
-//            if(internetEnable) {
-//                try {
-//
-//                    Commandline internetEnable = new Commandline();
-//
-//                    internetEnable.setExecutable("hdiutil");
-//                    internetEnable.createArgument().setValue("internet-enable" );
-//                    internetEnable.createArgument().setValue("-yes");
-//                    internetEnable.createArgument().setValue(diskImageFile.getAbsolutePath());
-//
-//                    internetEnable.execute();
-//                } catch (CommandLineException e) {
-//                    throw new MojoExecutionException("Error internet enabling disk image: " + diskImageFile, e);
-//                }
-//            }
-//            projectHelper.attachArtifact(project, "dmg", null, diskImageFile);
-//        }
-
-//        zipArchiver.setDestFile( zipFile );
-//        try
-//        {
-//            String[] stubPattern = {buildDirectory.getName() + "/" + bundleDir.getName() +"/Contents/MacOS/" + javaLauncherName};
-//
-//            zipArchiver.addDirectory( buildDirectory.getParentFile(), new String[]{buildDirectory.getName() + "/**"},
-//                    stubPattern);
-//
-//            DirectoryScanner scanner = new DirectoryScanner();
-//            scanner.setBasedir( buildDirectory.getParentFile() );
-//            scanner.setIncludes( stubPattern);
-//            scanner.scan();
-//
-//            String[] stubs = scanner.getIncludedFiles();
-//            for ( int i = 0; i < stubs.length; i++ )
-//            {
-//                String s = stubs[i];
-//                zipArchiver.addFile( new File( buildDirectory.getParentFile(), s ), s, 0755 );
-//            }
-//
-//            zipArchiver.createArchive();
-//            projectHelper.attachArtifact(project, "zip", null, zipFile);
-//        }
-//        catch ( ArchiverException e )
-//        {
-//            throw new MojoExecutionException( "Could not create zip archive of application bundle in " + zipFile, e );
-//        }
-//        catch ( IOException e )
-//        {
-//            throw new MojoExecutionException( "IOException creating zip archive of application bundle in " + zipFile,
-//                                              e );
-//        }
+      }
     }
+    return addedFiles;
+  }
 
-    /**
-     * The bundle name is used in paths, so we need to clean it for
-     * unwanted characters, like ":" on Windows.
-     * @param bundleName the "unclean" bundle name.
-     * @return a clean bundle name
-     */
-    private String cleanBundleName(String bundleName) {
-        return bundleName.replace(':', '-');
+  private static boolean copyStream(final InputStream is, final OutputStream os) throws IOException {
+    try {
+      final byte[] buf = new byte[1024];
+
+      int len = 0;
+      while ((len = is.read(buf)) > 0) {
+        os.write(buf, 0, len);
+      }
+      is.close();
+      os.close();
+      return true;
     }
-
-//	private boolean isOSX()
-//    {
-//	    String osName = System.getProperty( "os.name" );
-//	    return osName.equalsIgnoreCase("Mac OS X");
-//    }
-
-    /**
-     * Copy all dependencies into the $JAVAROOT directory
-     *
-     * @param javaDirectory where to put jar files
-     * @return A list of file names added
-     * @throws MojoExecutionException
-     */
-    private List<String> copyDependencies(File javaDirectory)
-        throws MojoExecutionException
-    {
-
-        ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
-
-        List<String> list = new ArrayList<String>();
-
-//        File repoDirectory = new File(javaDirectory, "repo");
-//        repoDirectory.mkdirs();
-
-        // First, copy the project's own artifact
-        File artifactFile = project.getArtifact().getFile();
-        list.add(layout.pathOf(project.getArtifact()));
-
-        try
-        {
-            FileUtils.copyFile( artifactFile, new File(javaDirectory, layout.pathOf(project.getArtifact())) );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not copy artifact file " + artifactFile + " to " + javaDirectory );
-        }
-
-        Set<Artifact> artifacts = project.getArtifacts();
-
-        Iterator<Artifact> i = artifacts.iterator();
-
-        while ( i.hasNext() )
-        {
-            Artifact artifact = i.next();
-
-            File file = artifact.getFile();
-            File dest = new File(javaDirectory, layout.pathOf(artifact));
-
-            getLog().debug("Adding " + file);
-
-            try
-            {
-                FileUtils.copyFile( file, dest);
-            }
-            catch ( IOException e )
-            {
-                throw new MojoExecutionException("Error copying file " + file + " into " + javaDirectory, e);
-            }
-
-            list.add(layout.pathOf(artifact));
-        }
-
-        return list;
+    catch (final IOException e) {
+      e.printStackTrace();
     }
-
-    /**
-     * Copy additional dependencies into the $JAVAROOT directory.
-     * @param javaDirectory
-     * @param targetDirectoryName The directory within $JAVAROOT that these resources will be copied to
-     * @param additionalBundledClasspathResources
-     * @return A list of file names added
-     * @throws MojoExecutionException
-     */
-    private List/*<String>*/ copyAdditionalBundledClasspathResources(File javaDirectory, String targetDirectoryName, List/*<FileSet>*/ additionalBundledClasspathResources) throws MojoExecutionException {
-    	// Create the destination directory
-    	File destinationDirectory = new File(javaDirectory, targetDirectoryName);
-    	destinationDirectory.mkdirs();
-
-		List addedFilenames = copyResources(destinationDirectory, additionalBundledClasspathResources);
-
-		return addPath(addedFilenames, targetDirectoryName);
-	}
-
-    /**
-     * Modifies a String list of filenames to include an additional path.
-     * @param filenames
-     * @param additionalPath
-     * @return
-     */
-    private List addPath(List filenames, String additionalPath) {
-    	ArrayList newFilenames = new ArrayList(filenames.size());
-    	for (int i = 0; i < filenames.size(); i++) {
-    		newFilenames.add(additionalPath + '/' + filenames.get(i));
-		}
-    	return newFilenames;
-    }
-
-    /**
-     * Writes an Info.plist file describing this bundle.
-     *
-     * @param infoPlist The file to write Info.plist contents to
-     * @param files     A list of file names of the jar files to add in $JAVAROOT
-     * @throws MojoExecutionException
-     */
-    private void writeInfoPlist( File infoPlist, List files )
-        throws MojoExecutionException
-    {
-    	Velocity.setProperty("file.resource.loader.path", "target/classes" );
-    	
-    	try {
-			Velocity.init();
-		} catch (Exception e) {
-            throw new MojoExecutionException( "Exception occured in initializing velocity", e);
-		}
-    	
-        VelocityContext velocityContext = new VelocityContext();
-
-        velocityContext.put( "mainClass", mainClass );
-        velocityContext.put( "cfBundleExecutable", javaLauncherName);
-        velocityContext.put( "vmOptions", vmOptions);
-        velocityContext.put( "bundleName", cleanBundleName(bundleName) );
-        velocityContext.put( "bundleSignature", bundleSignature);
-        
-        velocityContext.put( "workingDirectory", workingDirectory);
-
-        velocityContext.put( "iconFile", iconFile == null ? "GenericJavaApp.icns" : iconFile.getName() );
-
-        velocityContext.put( "version", version );
-
-        velocityContext.put( "jvmVersion", jvmVersion );
-
-        StringBuffer jarFilesBuffer = new StringBuffer();
-
-        jarFilesBuffer.append( "<array>" );
-        for ( int i = 0; i < files.size(); i++ )
-        {
-            String name = (String) files.get( i );
-            jarFilesBuffer.append( "<string>" );
-            jarFilesBuffer.append( name );
-            jarFilesBuffer.append( "</string>" );
-
-        }
-        if ( additionalClasspath != null )
-        {
-            for ( int i = 0; i < additionalClasspath.size(); i++ )
-            {
-                String pathElement = (String) additionalClasspath.get( i );
-                jarFilesBuffer.append( "<string>" );
-                jarFilesBuffer.append( pathElement );
-                jarFilesBuffer.append( "</string>" );
-
-            }
-        }
-        jarFilesBuffer.append( "</array>" );
-
-        velocityContext.put( "classpath", jarFilesBuffer.toString() );
-
-        try
-        {
-        	File f = new File("target/classes", dictionaryFile);
-        	URI rsrc = null;
-        	
-        	if( f.exists() && f.isFile() ) {
-        		rsrc = f.toURI();
-        		
-        		String encoding = detectEncoding(rsrc);
-
-                getLog().debug( "Detected encoding " + encoding + " for dictionary file " +dictionaryFile  );
-
-                Writer writer = new OutputStreamWriter( new FileOutputStream(infoPlist), encoding );
-
-                Template template = Velocity.getTemplate(dictionaryFile, encoding);
-                
-                template.merge(velocityContext, writer);
-
-                writer.close();
-        	} else {
-        		Writer writer = new OutputStreamWriter( new FileOutputStream(infoPlist), "UTF-8");
-
-                velocity.getEngine().mergeTemplate( dictionaryFile, "UTF-8", velocityContext, writer );
-
-                writer.close();
-        	}
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Could not write Info.plist to file " + infoPlist, e );
-        }
-        catch ( ParseErrorException e )
-        {
-            throw new MojoExecutionException( "Error parsing " + dictionaryFile, e );
-        }
-        catch ( ResourceNotFoundException e )
-        {
-            throw new MojoExecutionException( "Could not find resource for template " + dictionaryFile, e );
-        }
-        catch ( MethodInvocationException e )
-        {
-            throw new MojoExecutionException(
-                "MethodInvocationException occured merging Info.plist template " + dictionaryFile, e );
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "Exception occured merging Info.plist template " + dictionaryFile, e );
-        }
-
-    }
-
-    private static String detectEncoding( URI uri ) throws Exception {
-    	byte[] data = Files.readAllBytes(Paths.get(uri));
-    	return new DefaultEncodingDetector().detectXmlEncoding( new ByteArrayInputStream(data) );
-    }
-
-    /**
-     * Scan a fileset and get a list of files which it contains.
-     * @param fileset
-     * @return list of files contained within a fileset.
-     * @throws FileNotFoundException
-     */
-    private List/*<String>*/ scanFileSet(File sourceDirectory, FileSet fileSet) {
-        final String[] emptyStrArray = {};
-
-        DirectoryScanner scanner = new DirectoryScanner();
-
-        scanner.setBasedir( sourceDirectory );
-        if ( fileSet.getIncludes() != null && !fileSet.getIncludes().isEmpty() )
-        {
-            scanner.setIncludes( fileSet.getIncludes().toArray( emptyStrArray ) );
-        }
-        else
-        {
-            scanner.setIncludes( DEFAULT_INCLUDES );
-        }
-
-        if ( fileSet.getExcludes() != null && !fileSet.getExcludes().isEmpty() )
-        {
-            scanner.setExcludes( fileSet.getExcludes().toArray( emptyStrArray ) );
-        }
-
-        if (fileSet.isUseDefaultExcludes())
-        {
-            scanner.addDefaultExcludes();
-        }
-
-        scanner.scan();
-
-        List/*<String>*/ includedFiles = Arrays.asList( scanner.getIncludedFiles() );
-
-        return includedFiles;
-    }
-
-    /**
-     * Copies given resources to the build directory.
-     *
-     * @param fileSets A list of FileSet objects that represent additional resources to copy.
-     * @throws MojoExecutionException In case af a resource copying error.
-     */
-    private List/*<String>*/ copyResources(File targetDirectory, List/*<FileSet>*/ fileSets) throws MojoExecutionException {
-    	ArrayList/*<String>*/ addedFiles = new ArrayList/*<String>*/();
-        for ( Iterator it = fileSets.iterator(); it.hasNext(); )
-        {
-            FileSet fileSet = (FileSet) it.next();
-
-            // Get the absolute base directory for the FileSet
-    		File sourceDirectory = new File(fileSet.getDirectory());
-    		if (!sourceDirectory.isAbsolute()) {
-    			sourceDirectory = new File(project.getBasedir(), sourceDirectory.getPath());
-    		}
-    		if (!sourceDirectory.exists()) {
-    			// If the requested directory does not exist, log it and carry on
-    			// TODO re-instate the logging that was here previously
-    			continue;
-    		}
-
-            List includedFiles = scanFileSet(sourceDirectory, fileSet);
-            addedFiles.addAll(includedFiles);
-
-            getLog().info( "Copying " + includedFiles.size() + " additional resource"
-                           + ( includedFiles.size() > 1 ? "s" : "" ) );
-
-            for ( Iterator j = includedFiles.iterator(); j.hasNext(); )
-            {
-                String destination = (String) j.next();
-                File source = new File(sourceDirectory, destination);
-                File destinationFile = new File(targetDirectory, destination);
-
-                // Make sure that the directory we are copying into exists
-                destinationFile.getParentFile().mkdirs();
-
-				try {
-					FileUtils.copyFile(source, destinationFile);
-				} catch (IOException e) {
-					throw new MojoExecutionException("Error copying additional resource " + source, e);
-				}
-            }
-        }
-        return addedFiles;
-    }
-
-    private static boolean copyStream(final InputStream is, final OutputStream os) throws IOException {
-        try {
-            final byte[] buf = new byte[1024];
-
-            int len = 0;
-            while ((len = is.read(buf)) > 0) {
-                os.write(buf, 0, len);
-            }
-            is.close();
-            os.close();
-            return true;
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+    return false;
+  }
 }

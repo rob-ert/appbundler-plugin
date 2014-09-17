@@ -16,49 +16,45 @@ package com.bsdroot.github.appbundler;
  * limitations under the License.
  */
 
-
 /**
- * Object of this class represents a set of file resources
- * that can be specified by directory and exclude/include patterns.
+ * Object of this class represents a set of file resources that can be specified
+ * by directory and exclude/include patterns.
  * <p/>
  * Created date: Jan 19, 2008
  *
  * @author Zhenya Nyden
  */
-public class FileSet extends org.apache.maven.model.FileSet
-{
+public class FileSet extends org.apache.maven.model.FileSet {
 
-    /**
-     * When false, disables the default excludes.
-     * Default value is true.
-     *
-     * @parameter expression="true"
-     */
-    private boolean useDefaultExcludes;
+  private static final long serialVersionUID = 6338245981867761208L;
+  /**
+   * When false, disables the default excludes. Default value is true.
+   *
+   * @parameter expression="true"
+   */
+  private boolean useDefaultExcludes;
 
-    /**
-     * Getter for the useDefaultExcludes property.
-     * Returns true if default excludes are going to be added to
-     * the FileSet's list of excludes; false if only user excludes
-     * are going to be used.
-     *
-     * @return Value for useDefaultExcludes property.
-     */
-    public boolean isUseDefaultExcludes()
-    {
-        return useDefaultExcludes;
-    }
+  /**
+   * Getter for the useDefaultExcludes property. Returns true if default
+   * excludes are going to be added to the FileSet's list of excludes; false if
+   * only user excludes are going to be used.
+   *
+   * @return Value for useDefaultExcludes property.
+   */
+  public boolean isUseDefaultExcludes() {
+    return useDefaultExcludes;
+  }
 
-    /**
-     * Setter for the useDefaultExcludes property.
-     * Set it to false if default excludes should not be added to the FileSet's
-     * list of excludes. Set it to true if default excludes are also required.
-     *
-     * @param useDefaultExcludes Value for the useDefaultExcludes to set.
-     */
-    public void setUseDefaultExcludes( boolean useDefaultExcludes )
-    {
-        this.useDefaultExcludes = useDefaultExcludes;
-    }
+  /**
+   * Setter for the useDefaultExcludes property. Set it to false if default
+   * excludes should not be added to the FileSet's list of excludes. Set it to
+   * true if default excludes are also required.
+   *
+   * @param useDefaultExcludes
+   *          Value for the useDefaultExcludes to set.
+   */
+  public void setUseDefaultExcludes(boolean useDefaultExcludes) {
+    this.useDefaultExcludes = useDefaultExcludes;
+  }
 
 }
