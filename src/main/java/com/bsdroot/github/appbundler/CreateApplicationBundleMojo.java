@@ -1,4 +1,4 @@
-package io.github.appbundler;
+package com.bsdroot.github.appbundler;
 
 /*
  * Copyright 2001-2008 The Codehaus.
@@ -16,8 +16,6 @@ package io.github.appbundler;
  * limitations under the License.
  */
 
-
-import io.github.appbundler.encoding.DefaultEncodingDetector;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -54,6 +52,8 @@ import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.velocity.VelocityComponent;
+
+import com.bsdroot.github.appbundler.encoding.DefaultEncodingDetector;
 
 /**
  * Package dependencies as an Application Bundle for Mac OS X.
@@ -193,7 +193,7 @@ public class CreateApplicationBundleMojo
      * The location of the template for Info.plist.
      * Classpath is checked before the file system.
      *
-     * @parameter default-value="io/github/appbundler/Info.plist.template"
+     * @parameter default-value="com/bsdroot/github/appbundler/Info.plist.template"
      */
     private String dictionaryFile;
 

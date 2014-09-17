@@ -1,4 +1,4 @@
-package io.github.appbundler.encoding;
+package com.bsdroot.github.appbundler.encoding;
 
 /*
  * Copyright 2001-2008 The Codehaus.

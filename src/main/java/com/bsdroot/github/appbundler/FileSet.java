@@ -1,4 +1,4 @@
-package io.github.appbundler;
+package com.bsdroot.github.appbundler;
 
 /*
  * Copyright 2001-2008 The Codehaus.
