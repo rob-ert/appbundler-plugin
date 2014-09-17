@@ -11,13 +11,7 @@ I merged both and fix to work as a maven plugin that supports latest Mac OS X.
 
 # How to build
 
-To build native application launcher, run
-
-```
-sh build.sh
-```
-
-and install
+To build native application launcher, run on OSX
 
 ```
 mvn install

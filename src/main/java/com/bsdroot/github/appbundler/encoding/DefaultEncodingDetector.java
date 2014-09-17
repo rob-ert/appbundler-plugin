@@ -25,51 +25,44 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 /**
- * Default implementation of EncodingDetector. Reads the first characters of the input stream and uses a regular expression to find any
- * instances of <?xml encoding=".."?>
+ * Default implementation of EncodingDetector. Reads the first characters of the
+ * input stream and uses a regular expression to find any instances of <?xml
+ * encoding=".."?>
  */
-public class DefaultEncodingDetector
-    implements EncodingDetector
-{
+public class DefaultEncodingDetector {
 
-    private Pattern pattern = Pattern.compile( "<?(xml|XML).*encoding=\"(.*)\""); //.*encoding=\"(.*)\"" );
+  private Pattern pattern = Pattern.compile("<?(xml|XML).*encoding=\"(.*)\""); // .*encoding=\"(.*)\""
+                                                                               // );
 
-    private static final String DEFAULT_ENCODING = "UTF-8";
+  private static final String DEFAULT_ENCODING = "UTF-8";
 
-    public String detectXmlEncoding( InputStream inputStream )
-    {
-        Reader reader;
+  public String detectXmlEncoding(InputStream inputStream) {
+    Reader reader;
 
-        try
-        {
-            reader = new InputStreamReader( inputStream, DEFAULT_ENCODING);
-        }
-        catch ( UnsupportedEncodingException e )
-        {
-            throw new IllegalStateException( "encoding not supported: " + DEFAULT_ENCODING);
-        }
-
-        char[] buffer = new char[1000];
-
-        try
-        {
-            int read = reader.read( buffer );
-
-            String string = new String( buffer, 0, read );
-            Matcher matcher = pattern.matcher( string );
-            if ( matcher.find() )
-            {
-                return matcher.group( 2 );
-            }
-            else
-            {
-                return DEFAULT_ENCODING;
-            }
-        }
-        catch ( IOException e )
-        {
-            return DEFAULT_ENCODING;
-        }
-
+    try {
+      reader = new InputStreamReader(inputStream, DEFAULT_ENCODING);
     }
+    catch (UnsupportedEncodingException e) {
+      throw new IllegalStateException("encoding not supported: " + DEFAULT_ENCODING);
+    }
+
+    char[] buffer = new char[1000];
+
+    try {
+      int read = reader.read(buffer);
+
+      String string = new String(buffer, 0, read);
+      Matcher matcher = pattern.matcher(string);
+      if (matcher.find()) {
+        return matcher.group(2);
+      }
+      else {
+        return DEFAULT_ENCODING;
+      }
+    }
+    catch (IOException e) {
+      return DEFAULT_ENCODING;
+    }
+
+  }
 }

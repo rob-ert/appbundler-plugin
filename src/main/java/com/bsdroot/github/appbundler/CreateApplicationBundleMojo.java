@@ -40,14 +40,9 @@ import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectHelper;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
-import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
-import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.velocity.VelocityComponent;
@@ -86,15 +81,6 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
   private File buildDirectory;
 
   /**
-   * The location of the generated disk image file
-   *
-   * @parameter 
-   *            default-value="${project.build.directory}/${project.build.finalName}.dmg"
-   */
-  @SuppressWarnings("unused")
-  private File diskImageFile;
-
-  /**
    * The main class to execute when double-clicking the Application Bundle
    *
    * @parameter default-value="JavaAppLauncher";
@@ -130,7 +116,6 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
    * bundle; and it is also what will show up in the application menu, dock etc.
    *
    * @parameter default-value="????"
-   * @required
    */
   private String bundleSignature;
 
@@ -161,22 +146,13 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
   /**
    * A value for the JVMVersion key.
    *
-   * @parameter default-value="1.4+"
+   * @parameter default-value="1.7+"
    */
   private String jvmVersion;
 
   /**
-   * The location of the produced Zip file containing the bundle.
-   *
-   * @parameter default-value=
-   *            "${project.build.directory}/${project.build.finalName}-app.zip"
-   */
-  @SuppressWarnings("unused")
-  private File zipFile;
-
-  /**
    * Paths to be put on the classpath in addition to the projects dependencies.
-   * Might be useful to specifiy locations of dependencies in the provided scope
+   * Might be useful to specify locations of dependencies in the provided scope
    * that are not distributed with the bundle but have a known location on the
    * system. {@see http://jira.codehaus.org/browse/MOJO-874}
    *
@@ -225,35 +201,6 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
   private String vmOptions;
 
   /**
-   * The Zip archiver.
-   *
-   * @component
-   * @readonly
-   */
-  @SuppressWarnings("unused")
-  private MavenProjectHelper projectHelper;
-
-  /**
-   * The Zip archiver.
-   *
-   * @parameter 
-   *            expression="${component.org.codehaus.plexus.archiver.Archiver#zip}"
-   * @required
-   * @readonly
-   */
-  @SuppressWarnings("unused")
-  private ZipArchiver zipArchiver;
-
-  /**
-   * If this is set to <code>true</code>, the generated DMG file will be
-   * internet-enabled. The default is ${false}
-   *
-   * @parameter default-value="false"
-   */
-  @SuppressWarnings("unused")
-  private boolean internetEnable;
-
-  /**
    * Bundle project as a Mac OS X application bundle.
    *
    * @throws MojoExecutionException
@@ -264,23 +211,23 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
     // Set up and create directories
     buildDirectory.mkdirs();
 
-    File bundleDir = new File(buildDirectory, bundleName + ".app");
+    final File bundleDir = new File(buildDirectory, bundleName + ".app");
     bundleDir.mkdirs();
 
-    File contentsDir = new File(bundleDir, "Contents");
+    final File contentsDir = new File(bundleDir, "Contents");
     contentsDir.mkdirs();
 
-    File resourcesDir = new File(contentsDir, "Resources");
+    final File resourcesDir = new File(contentsDir, "Resources");
     resourcesDir.mkdirs();
 
-    File javaDirectory = new File(contentsDir, "Java");
+    final File javaDirectory = new File(contentsDir, "Java");
     javaDirectory.mkdirs();
 
-    File macOSDirectory = new File(contentsDir, "MacOS");
+    final File macOSDirectory = new File(contentsDir, "MacOS");
     macOSDirectory.mkdirs();
 
     // Copy in the native java application stub
-    File launcher = new File(macOSDirectory, javaLauncherName);
+    final File launcher = new File(macOSDirectory, javaLauncherName);
     launcher.setExecutable(true);
 
     FileOutputStream launcherStream = null;
@@ -292,7 +239,8 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
       throw new MojoExecutionException("Could not copy file to directory " + launcher, e);
     }
 
-    InputStream launcherResourceStream = this.getClass().getResourceAsStream(javaLauncherName);
+    final InputStream launcherResourceStream = this.getClass().getResourceAsStream(javaLauncherName);
+
     try {
       copyStream(launcherResourceStream, launcherStream);
 
@@ -312,7 +260,7 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
     }
 
     // Resolve and copy in all dependecies from the pom
-    List<String> files = copyDependencies(javaDirectory);
+    final List<String> files = copyDependencies(javaDirectory);
 
     System.out.println("Checking for additionalBundledClasspathResources: " + additionalBundledClasspathResources);
     if (additionalBundledClasspathResources != null && !additionalBundledClasspathResources.isEmpty()) {
@@ -320,7 +268,7 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
     }
 
     // Create and write the Info.plist file
-    File infoPlist = new File(bundleDir, "Contents/Info.plist");
+    final File infoPlist = new File(bundleDir, "Contents/Info.plist");
     writeInfoPlist(infoPlist, files);
 
     // Copy specified additional resources into the top level directory
@@ -352,9 +300,9 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
    */
   private List<String> copyDependencies(File javaDirectory) throws MojoExecutionException {
 
-    ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
+    final ArtifactRepositoryLayout layout = new DefaultRepositoryLayout();
 
-    List<String> list = new ArrayList<String>();
+    final List<String> list = new ArrayList<String>();
 
     // File repoDirectory = new File(javaDirectory, "repo");
     // repoDirectory.mkdirs();
@@ -370,15 +318,15 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
       throw new MojoExecutionException("Could not copy artifact file " + artifactFile + " to " + javaDirectory);
     }
 
-    Set<Artifact> artifacts = project.getArtifacts();
+    final Set<Artifact> artifacts = project.getArtifacts();
 
-    Iterator<Artifact> i = artifacts.iterator();
+    final Iterator<Artifact> i = artifacts.iterator();
 
     while (i.hasNext()) {
-      Artifact artifact = i.next();
+      final Artifact artifact = i.next();
 
-      File file = artifact.getFile();
-      File dest = new File(javaDirectory, layout.pathOf(artifact));
+      final File file = artifact.getFile();
+      final File dest = new File(javaDirectory, layout.pathOf(artifact));
 
       getLog().debug("Adding " + file);
 
@@ -409,10 +357,10 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
   private List<String> copyAdditionalBundledClasspathResources(File javaDirectory, String targetDirectoryName,
       List<FileSet> additionalBundledClasspathResources) throws MojoExecutionException {
     // Create the destination directory
-    File destinationDirectory = new File(javaDirectory, targetDirectoryName);
+    final File destinationDirectory = new File(javaDirectory, targetDirectoryName);
     destinationDirectory.mkdirs();
 
-    List<String> addedFilenames = copyResources(destinationDirectory, additionalBundledClasspathResources);
+    final List<String> addedFilenames = copyResources(destinationDirectory, additionalBundledClasspathResources);
 
     return addPath(addedFilenames, targetDirectoryName);
   }
@@ -425,9 +373,9 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
    * @return
    */
   private List<String> addPath(List<String> filenames, String additionalPath) {
-    ArrayList<String> newFilenames = new ArrayList<>(filenames.size());
-    for (int i = 0; i < filenames.size(); i++) {
-      newFilenames.add(additionalPath + '/' + filenames.get(i));
+    final ArrayList<String> newFilenames = new ArrayList<>(filenames.size());
+    for (final String filename : filenames) {
+      newFilenames.add(additionalPath + '/' + filename);
     }
     return newFilenames;
   }
@@ -451,7 +399,7 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
       throw new MojoExecutionException("Exception occured in initializing velocity", e);
     }
 
-    VelocityContext velocityContext = new VelocityContext();
+    final VelocityContext velocityContext = new VelocityContext();
 
     velocityContext.put("mainClass", mainClass);
     velocityContext.put("cfBundleExecutable", javaLauncherName);
@@ -459,28 +407,22 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
     velocityContext.put("bundleName", cleanBundleName(bundleName));
     velocityContext.put("bundleSignature", bundleSignature);
     velocityContext.put("appName", appName);
-
     velocityContext.put("workingDirectory", workingDirectory);
-
     velocityContext.put("iconFile", iconFile == null ? "GenericJavaApp.icns" : iconFile.getName());
-
     velocityContext.put("version", version);
-
     velocityContext.put("jvmVersion", jvmVersion);
 
-    StringBuffer jarFilesBuffer = new StringBuffer();
+    final StringBuffer jarFilesBuffer = new StringBuffer();
 
     jarFilesBuffer.append("<array>");
-    for (int i = 0; i < files.size(); i++) {
-      String name = (String) files.get(i);
+    for (String name : files) {
       jarFilesBuffer.append("<string>");
       jarFilesBuffer.append(name);
       jarFilesBuffer.append("</string>");
 
     }
     if (additionalClasspath != null) {
-      for (int i = 0; i < additionalClasspath.size(); i++) {
-        String pathElement = (String) additionalClasspath.get(i);
+      for (String pathElement : additionalClasspath) {
         jarFilesBuffer.append("<string>");
         jarFilesBuffer.append(pathElement);
         jarFilesBuffer.append("</string>");
@@ -491,54 +433,41 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
 
     velocityContext.put("classpath", jarFilesBuffer.toString());
 
-    try {
-      File f = new File("target/classes", dictionaryFile);
-      URI rsrc = null;
+    final File f = new File("target/classes", dictionaryFile);
+    URI rsrc = null;
 
+    try {
       if (f.exists() && f.isFile()) {
         rsrc = f.toURI();
 
-        String encoding = detectEncoding(rsrc);
+        final String encoding = detectEncoding(rsrc);
 
         getLog().debug("Detected encoding " + encoding + " for dictionary file " + dictionaryFile);
 
-        Writer writer = new OutputStreamWriter(new FileOutputStream(infoPlist), encoding);
+        final Writer writer = new OutputStreamWriter(new FileOutputStream(infoPlist), encoding);
 
-        Template template = Velocity.getTemplate(dictionaryFile, encoding);
+        final Template template = Velocity.getTemplate(dictionaryFile, encoding);
 
         template.merge(velocityContext, writer);
 
         writer.close();
       }
       else {
-        Writer writer = new OutputStreamWriter(new FileOutputStream(infoPlist), "UTF-8");
+        final Writer writer = new OutputStreamWriter(new FileOutputStream(infoPlist), "UTF-8");
 
         velocity.getEngine().mergeTemplate(dictionaryFile, "UTF-8", velocityContext, writer);
 
         writer.close();
       }
     }
-    catch (IOException e) {
-      throw new MojoExecutionException("Could not write Info.plist to file " + infoPlist, e);
-    }
-    catch (ParseErrorException e) {
-      throw new MojoExecutionException("Error parsing " + dictionaryFile, e);
-    }
-    catch (ResourceNotFoundException e) {
-      throw new MojoExecutionException("Could not find resource for template " + dictionaryFile, e);
-    }
-    catch (MethodInvocationException e) {
-      throw new MojoExecutionException("MethodInvocationException occured merging Info.plist template "
-          + dictionaryFile, e);
-    }
     catch (Exception e) {
-      throw new MojoExecutionException("Exception occured merging Info.plist template " + dictionaryFile, e);
+      throw new MojoExecutionException("Unable to create application", e);
     }
 
   }
 
   private static String detectEncoding(URI uri) throws Exception {
-    byte[] data = Files.readAllBytes(Paths.get(uri));
+    final byte[] data = Files.readAllBytes(Paths.get(uri));
     return new DefaultEncodingDetector().detectXmlEncoding(new ByteArrayInputStream(data));
   }
 
@@ -552,7 +481,7 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
   private List<String> scanFileSet(File sourceDirectory, FileSet fileSet) {
     final String[] emptyStrArray = {};
 
-    DirectoryScanner scanner = new DirectoryScanner();
+    final DirectoryScanner scanner = new DirectoryScanner();
 
     scanner.setBasedir(sourceDirectory);
     if (fileSet.getIncludes() != null && !fileSet.getIncludes().isEmpty()) {
@@ -572,7 +501,7 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
 
     scanner.scan();
 
-    List<String> includedFiles = Arrays.asList(scanner.getIncludedFiles());
+    final List<String> includedFiles = Arrays.asList(scanner.getIncludedFiles());
 
     return includedFiles;
   }
@@ -587,9 +516,8 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
    *           In case af a resource copying error.
    */
   private List<String> copyResources(File targetDirectory, List<FileSet> fileSets) throws MojoExecutionException {
-    ArrayList<String> addedFiles = new ArrayList<>();
-    for (Iterator<FileSet> it = fileSets.iterator(); it.hasNext();) {
-      FileSet fileSet = (FileSet) it.next();
+    final ArrayList<String> addedFiles = new ArrayList<>();
+    for (FileSet fileSet : fileSets) {
 
       // Get the absolute base directory for the FileSet
       File sourceDirectory = new File(fileSet.getDirectory());
@@ -602,15 +530,14 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
         continue;
       }
 
-      List<String> includedFiles = scanFileSet(sourceDirectory, fileSet);
+      final List<String> includedFiles = scanFileSet(sourceDirectory, fileSet);
       addedFiles.addAll(includedFiles);
 
       getLog().info("Copying " + includedFiles.size() + " additional resource" + (includedFiles.size() > 1 ? "s" : ""));
 
-      for (Iterator<String> j = includedFiles.iterator(); j.hasNext();) {
-        String destination = (String) j.next();
-        File source = new File(sourceDirectory, destination);
-        File destinationFile = new File(targetDirectory, destination);
+      for (String destination : includedFiles) {
+        final File source = new File(sourceDirectory, destination);
+        final File destinationFile = new File(targetDirectory, destination);
 
         // Make sure that the directory we are copying into exists
         destinationFile.getParentFile().mkdirs();
