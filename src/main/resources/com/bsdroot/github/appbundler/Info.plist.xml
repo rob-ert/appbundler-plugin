@@ -40,6 +40,6 @@
       <string>-Xdock:name=${appName}</string>
     </array>
     <key>JVMArguments</key>
-    <array/>
+    <array />
   </dict>
 </plist>

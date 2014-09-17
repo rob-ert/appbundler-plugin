@@ -9,4 +9,4 @@ SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Develo
 ARCH="x86_64"
 MIN_MAC_OSX_VERSION="10.9"
 
-$CC -o $DST $FRAMEWORK $INCLUDE -arch $ARCH -isysroot $SDK -mmacosx-version-min=$MIN_MAC_OSX_VERSION $SRC
+$CC -v -o $DST $FRAMEWORK $INCLUDE -arch $ARCH -isysroot $SDK -mmacosx-version-min=$MIN_MAC_OSX_VERSION $SRC
