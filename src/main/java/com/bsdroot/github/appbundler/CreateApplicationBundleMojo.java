@@ -108,6 +108,14 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
    * @required
    */
   private String mainClass;
+  
+  
+  /**
+   * The main class to execute when double-clicking the Application Bundle
+   *
+   * @parameter default-value="JavaApp";
+   */
+  private String appName;
 
   /**
    * The name of the Bundle. This is the name that is given to the application
@@ -585,6 +593,7 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
     velocityContext.put("vmOptions", vmOptions);
     velocityContext.put("bundleName", cleanBundleName(bundleName));
     velocityContext.put("bundleSignature", bundleSignature);
+    velocityContext.put("appName", appName);
 
     velocityContext.put("workingDirectory", workingDirectory);
 

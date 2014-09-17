@@ -37,6 +37,7 @@
       <string>-Dapple.laf.useScreenMenuBar=true</string>
       <string>-Dapple.awt.graphics.EnableQ2DX=true</string>
       <string>-Dapple.awt.graphics.UseQuart=true</string>
+      <string>-Xdock:name=${appName}</string>
     </array>
     <key>JVMArguments</key>
     <array/>
