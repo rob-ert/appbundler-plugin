@@ -116,6 +116,16 @@ public class CreateApplicationBundleMojo
      * @required
      */
     private String bundleName;
+    
+    
+    /**
+     * The name of the Bundle. This is the name that is given to the application bundle;
+     * and it is also what will show up in the application menu, dock etc.
+     *
+     * @parameter default-value="????"
+     * @required
+     */
+    private String bundleSignature;
 
     /**
      * The path to the working directory.  This can be inside or outside the app bundle.  To
@@ -559,6 +569,8 @@ public class CreateApplicationBundleMojo
         velocityContext.put( "cfBundleExecutable", javaLauncherName);
         velocityContext.put( "vmOptions", vmOptions);
         velocityContext.put( "bundleName", cleanBundleName(bundleName) );
+        velocityContext.put( "bundleSignature", bundleSignature);
+        
         velocityContext.put( "workingDirectory", workingDirectory);
 
         velocityContext.put( "iconFile", iconFile == null ? "GenericJavaApp.icns" : iconFile.getName() );
