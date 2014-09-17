@@ -513,7 +513,7 @@ public class CreateApplicationBundleMojo extends AbstractMojo {
    *          A list of FileSet objects that represent additional resources to
    *          copy.
    * @throws MojoExecutionException
-   *           In case af a resource copying error.
+   *           In case of a resource copying error.
    */
   private List<String> copyResources(File targetDirectory, List<FileSet> fileSets) throws MojoExecutionException {
     final ArrayList<String> addedFiles = new ArrayList<>();
